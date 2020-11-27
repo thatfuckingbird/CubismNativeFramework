@@ -364,7 +364,7 @@ csmInt32 CubismModelSettingJson::GetEyeBlinkParameterCount()
 
         if (strcmp(refI[Name].GetRawString(), EyeBlink) == 0)
         {
-            num = refI[Ids].GetVector()->GetSize();
+            if (refI[Ids].GetVector()) num = refI[Ids].GetVector()->GetSize();
             break;
         }
     }
@@ -413,7 +413,7 @@ csmInt32 CubismModelSettingJson::GetLipSyncParameterCount()
 
         if (strcmp(refI[Name].GetRawString(), LipSync) == 0)
         {
-            num = refI[Ids].GetVector()->GetSize();
+            if (refI[Ids].GetVector()) num = refI[Ids].GetVector()->GetSize();
             break;
         }
     }

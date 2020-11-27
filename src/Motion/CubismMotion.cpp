@@ -438,6 +438,7 @@ void CubismMotion::Parse(const csmByte* motionJson, const csmSizeInt size)
 
     csmInt32 totalPointCount = 0;
     csmInt32 totalSegmentCount = 0;
+    csmBool isExPoint = false;
 
     // Curves
     for (csmInt32 curveCount = 0; curveCount < _motionData->CurveCount; ++curveCount)
@@ -473,6 +474,11 @@ void CubismMotion::Parse(const csmByte* motionJson, const csmSizeInt size)
         {
             if (segmentPosition == 0)
             {
+                if (totalPointCount + 1 > _motionData->Points.GetSize()) {
+                    isExPoint = true;
+                    goto end;
+                }
+
                 _motionData->Segments[totalSegmentCount].BasePointIndex = totalPointCount;
 
                 _motionData->Points[totalPointCount].Time = json->GetMotionCurveSegment(curveCount, segmentPosition);
@@ -491,6 +497,11 @@ void CubismMotion::Parse(const csmByte* motionJson, const csmSizeInt size)
             switch (segment)
             {
             case CubismMotionSegmentType_Linear: {
+                if (totalPointCount + 1 > _motionData->Points.GetSize()) {
+                    isExPoint = true;
+                    goto end;
+                }
+
                 _motionData->Segments[totalSegmentCount].SegmentType = CubismMotionSegmentType_Linear;
                 _motionData->Segments[totalSegmentCount].Evaluate = LinearEvaluate;
 
@@ -503,6 +514,11 @@ void CubismMotion::Parse(const csmByte* motionJson, const csmSizeInt size)
                 break;
             }
             case CubismMotionSegmentType_Bezier: {
+                if (totalPointCount + 3 > _motionData->Points.GetSize()) {
+                    isExPoint = true;
+                    goto end;
+                }
+
                 _motionData->Segments[totalSegmentCount].SegmentType = CubismMotionSegmentType_Bezier;
                 _motionData->Segments[totalSegmentCount].Evaluate = BezierEvaluate;
 
@@ -521,6 +537,11 @@ void CubismMotion::Parse(const csmByte* motionJson, const csmSizeInt size)
                 break;
             }
             case CubismMotionSegmentType_Stepped: {
+                if (totalPointCount + 1 > _motionData->Points.GetSize()) {
+                    isExPoint = true;
+                    goto end;
+                }
+
                 _motionData->Segments[totalSegmentCount].SegmentType = CubismMotionSegmentType_Stepped;
                 _motionData->Segments[totalSegmentCount].Evaluate = SteppedEvaluate;
 
@@ -533,6 +554,11 @@ void CubismMotion::Parse(const csmByte* motionJson, const csmSizeInt size)
                 break;
             }
             case CubismMotionSegmentType_InverseStepped: {
+                if (totalPointCount + 1 > _motionData->Points.GetSize()) {
+                    isExPoint = true;
+                    goto end;
+                }
+
                 _motionData->Segments[totalSegmentCount].SegmentType = CubismMotionSegmentType_InverseStepped;
                 _motionData->Segments[totalSegmentCount].Evaluate = InverseSteppedEvaluate;
 
@@ -553,6 +579,9 @@ void CubismMotion::Parse(const csmByte* motionJson, const csmSizeInt size)
             ++_motionData->Curves[curveCount].SegmentCount;
             ++totalSegmentCount;
         }
+
+end:
+        if (isExPoint) break;
     }
 
 
